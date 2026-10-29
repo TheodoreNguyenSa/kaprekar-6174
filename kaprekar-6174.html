@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Kaprekar 6174 — Lỗ hút toán học</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f3f4f0;
+        --surface: #ffffff;
+        --surface-2: #e9ebe4;
+        --ink: #16191a;
+        --muted: #5c635e;
+        --line: #d7dbd1;
+        --accent: #c5381a;
+        --accent-soft: #fbe9e2;
+        --accent-ink: #ffffff;
+        --gold: #8a5a00;
+        --gold-soft: #fdf3d7;
+        --good: #146c43;
+        --shadow: 0 18px 50px rgba(22, 25, 26, 0.10);
+        --radius: 18px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0e110f;
+          --surface: #171b18;
+          --surface-2: #21261f;
+          --ink: #edeff0;
+          --muted: #9aa39b;
+          --line: #2d332c;
+          --accent: #ff6b3d;
+          --accent-soft: #3a2016;
+          --accent-ink: #16100c;
+          --gold: #f2c14e;
+          --gold-soft: #33290f;
+          --good: #5ad69b;
+          --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Be Vietnam Pro", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+      /* ---------- SITE HEAD / FOOT ---------- */
+      .site-head {
+        display: flex; flex-wrap: wrap; gap: 14px;
+        align-items: center; justify-content: space-between;
+        padding: 22px 0 2px;
+      }
+      .brand { display: flex; flex-direction: column; }
+      .brand .name { font-weight: 900; font-size: 20px; letter-spacing: 0.01em; line-height: 1.2; }
+      .brand .name span { color: var(--accent); }
+      .brand .tag { font-size: 12.5px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; }
+      .lang-switch {
+        display: flex; flex-wrap: wrap; gap: 4px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 999px; padding: 4px;
+      }
+      .lang-btn {
+        appearance: none; border: none; cursor: pointer; background: transparent;
+        color: var(--muted); font-family: inherit; font-weight: 700; font-size: 13.5px;
+        padding: 7px 13px; border-radius: 999px; transition: background 0.12s, color 0.12s;
+      }
+      .lang-btn:hover { color: var(--ink); }
+      .lang-btn.active { background: var(--ink); color: var(--bg); }
+      .site-foot { margin-top: 10px; border-top: 1px solid var(--line); padding: 30px 0 48px; text-align: center; }
+      .site-foot .fname { font-weight: 900; color: var(--ink); font-size: 17px; }
+      .site-foot .fname span { color: var(--accent); }
+      .site-foot p { margin: 6px 0 0; color: var(--muted); font-size: 13.5px; }
+      .site-foot .mono { font-weight: 600; }
+
+      /* ---------- HERO ---------- */
+      .hero { padding: 48px 0 8px; }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 32px;
+        align-items: center;
+      }
+      .kicker {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--accent);
+      }
+      .kicker::before { content: ""; width: 26px; height: 2px; background: var(--accent); }
+      h1 {
+        margin: 14px 0 6px;
+        font-size: clamp(34px, 5.4vw, 56px);
+        line-height: 1.08; font-weight: 900; letter-spacing: -0.01em;
+      }
+      h1 .hl { color: var(--accent); }
+      .lede { font-size: clamp(16px, 2vw, 18.5px); color: var(--muted); max-width: 34em; margin: 10px 0 0; }
+      .lede strong { color: var(--ink); }
+      .rule-strip {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px;
+      }
+      .rule-step {
+        display: flex; align-items: center; gap: 10px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 999px; padding: 8px 16px 8px 9px;
+        font-size: 14px; font-weight: 600;
+      }
+      .rule-step .n {
+        width: 26px; height: 26px; border-radius: 50%;
+        background: var(--ink); color: var(--bg);
+        display: grid; place-items: center;
+        font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 700;
+        flex: none;
+      }
+      .rule-arrow { align-self: center; color: var(--muted); font-weight: 700; }
+
+      .attractor {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        max-width: 380px; margin: 0 auto; width: 100%;
+      }
+      .attractor svg { width: 100%; height: 100%; display: block; }
+      .attractor .core {
+        position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+      }
+      .attractor .core .big {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: clamp(44px, 6vw, 62px); font-weight: 700; letter-spacing: 0.04em;
+        color: var(--accent); line-height: 1;
+      }
+      .attractor .core .small { font-size: 12.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
+      .orbit-num {
+        position: absolute; font-family: "IBM Plex Mono", monospace; font-weight: 600;
+        background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+        padding: 3px 9px; border-radius: 999px; font-size: 13px;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .attractor svg { animation: spin 70s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      }
+
+      /* ---------- MACHINE ---------- */
+      .machine {
+        margin-top: 40px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        padding: clamp(22px, 4vw, 40px);
+      }
+      .machine h2 { margin: 0 0 4px; font-size: clamp(22px, 3vw, 28px); font-weight: 800; }
+      .machine .sub { color: var(--muted); margin: 0 0 24px; font-size: 15px; }
+      .input-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+      .digit-boxes { display: flex; gap: 10px; }
+      .digit-boxes input {
+        width: 62px; height: 76px;
+        text-align: center;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 38px; font-weight: 700;
+        color: var(--ink);
+        background: var(--bg);
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        outline: none;
+        caret-color: var(--accent);
+        transition: border-color 0.15s, transform 0.15s;
+        -moz-appearance: textfield; appearance: textfield;
+      }
+      .digit-boxes input::-webkit-outer-spin-button,
+      .digit-boxes input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+      .digit-boxes input:focus { border-color: var(--accent); transform: translateY(-2px); }
+      .digit-boxes input.filled { border-color: var(--ink); }
+      .actions { display: flex; flex-direction: column; gap: 10px; }
+      .btn {
+        appearance: none; border: none; cursor: pointer;
+        font-family: inherit; font-weight: 700; font-size: 16px;
+        border-radius: 14px; padding: 14px 26px;
+        display: inline-flex; align-items: center; gap: 9px; justify-content: center;
+        transition: transform 0.12s, opacity 0.12s, background 0.12s;
+      }
+      .btn:active { transform: scale(0.97); }
+      .btn-primary { background: var(--accent); color: var(--accent-ink); min-height: 54px; }
+      .btn-primary:hover { opacity: 0.92; }
+      .btn-ghost { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+      .btn-ghost:hover { border-color: var(--ink); }
+      .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+      .error {
+        display: none; margin-top: 16px;
+        background: var(--accent-soft); color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px;
+      }
+      .error.show { display: block; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; align-items: center; }
+      .chips .label { font-size: 13.5px; color: var(--muted); font-weight: 600; margin-right: 2px; }
+      .chip {
+        appearance: none; cursor: pointer; font-family: "IBM Plex Mono", monospace;
+        font-size: 14.5px; font-weight: 600;
+        background: var(--bg); color: var(--ink);
+        border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px;
+        transition: border-color 0.12s, color 0.12s;
+      }
+      .chip:hover { border-color: var(--accent); color: var(--accent); }
+      .chip.text { font-family: "Be Vietnam Pro", sans-serif; font-weight: 600; }
+
+      /* ---------- STAGE ---------- */
+      .stage { display: none; margin-top: 34px; border-top: 1px dashed var(--line); padding-top: 30px; }
+      .stage.show { display: block; }
+      .chain {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 26px;
+      }
+      .chain .node {
+        font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 16px;
+        padding: 6px 13px; border-radius: 10px;
+        background: var(--bg); border: 1px solid var(--line); color: var(--muted);
+        cursor: pointer; transition: all 0.15s;
+      }
+      .chain .node:hover { border-color: var(--ink); color: var(--ink); }
+      .chain .node.done { color: var(--ink); }
+      .chain .node.current { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+      .chain .node.final { background: var(--gold-soft); border-color: var(--gold); color: var(--gold); font-weight: 700; }
+      .chain .node.final.current { background: var(--gold); color: #fff; border-color: var(--gold); }
+      .chain .arr { color: var(--muted); font-size: 13px; }
+
+      .stage-grid { display: grid; grid-template-columns: 1fr 250px; gap: 26px; align-items: start; }
+      .calc {
+        background: var(--bg); border: 1px solid var(--line); border-radius: 18px;
+        padding: clamp(18px, 3vw, 30px);
+      }
+      .calc-row { display: flex; align-items: center; gap: 14px; }
+      .calc-row .tag {
+        width: 118px; flex: none; font-size: 12.5px; font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: right;
+      }
+      .tiles { display: flex; gap: 8px; }
+      .tile {
+        width: clamp(46px, 11vw, 62px); height: clamp(56px, 13vw, 74px);
+        display: grid; place-items: center;
+        font-family: "IBM Plex Mono", monospace; font-weight: 700;
+        font-size: clamp(28px, 6vw, 40px);
+        background: var(--surface); border: 2px solid var(--line); border-radius: 12px;
+      }
+      .tile.zero { color: var(--muted); }
+      .calc-row.result .tile { border-color: var(--gold); background: var(--gold-soft); color: var(--gold); }
+      .calc-row.result.self .tile { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+      .op-line { display: flex; align-items: center; gap: 14px; margin: 12px 0; }
+      .op-line .sign {
+        width: 118px; flex: none; text-align: right;
+        font-family: "IBM Plex Mono", monospace; font-size: 30px; font-weight: 700; color: var(--muted);
+      }
+      .op-line .bar { flex: 1; height: 3px; background: var(--ink); border-radius: 2px; max-width: 300px; }
+      .stage-side { display: flex; flex-direction: column; gap: 16px; }
+      .stat-box { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; }
+      .stat-box .k { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+      .stat-box .v { font-family: "IBM Plex Mono", monospace; font-size: 40px; font-weight: 700; line-height: 1.15; }
+      .stat-box .v small { font-size: 17px; color: var(--muted); font-weight: 600; }
+      .controls { display: flex; gap: 9px; }
+      .controls .btn { flex: 1; padding: 12px 10px; font-size: 14.5px; }
+      .finish {
+        display: none; margin-top: 26px;
+        border-radius: 18px; padding: 22px 26px;
+        background: var(--gold-soft); border: 1.5px solid var(--gold);
+      }
+      .finish.show { display: block; }
+      .finish .big { font-size: clamp(19px, 2.6vw, 24px); font-weight: 800; }
+      .finish .big .mono { color: var(--gold); }
+      .finish p { margin: 6px 0 0; color: var(--ink); font-size: 15px; }
+
+      .all-steps { margin-top: 30px; }
+      .all-steps h3 { font-size: 16px; font-weight: 800; margin: 0 0 12px; }
+      .step-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
+      .step-row {
+        display: flex; align-items: baseline; gap: 9px;
+        background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+        padding: 11px 15px; font-family: "IBM Plex Mono", monospace; font-size: 16.5px; font-weight: 600;
+        opacity: 0.4; transition: opacity 0.25s, border-color 0.25s;
+      }
+      .step-row.on { opacity: 1; }
+      .step-row .idx {
+        font-family: "Be Vietnam Pro", sans-serif; font-size: 11.5px; font-weight: 800;
+        background: var(--surface-2); border-radius: 6px; padding: 2px 7px; color: var(--muted); flex: none;
+      }
+      .step-row .res { color: var(--accent); font-weight: 700; }
+      .step-row .res.gold { color: var(--gold); }
+      .step-row .minus { color: var(--muted); }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .reveal { animation: pop 0.35s ease both; }
+        @keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      }
+
+      /* ---------- FACTS ---------- */
+      section.block { padding: 58px 0 4px; }
+      section.block h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 900; margin: 0 0 8px; letter-spacing: -0.01em; }
+      section.block .intro { color: var(--muted); max-width: 44em; margin: 0 0 26px; }
+      .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .fact {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 24px 26px;
+      }
+      .fact .num { font-family: "IBM Plex Mono", monospace; font-size: 34px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+      .fact h3 { margin: 8px 0 6px; font-size: 17px; font-weight: 800; }
+      .fact p { margin: 0; color: var(--muted); font-size: 14.5px; }
+      .fact p .mono { color: var(--ink); font-weight: 600; }
+
+      .chart-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+      .chart-card h3 { margin: 0 0 4px; font-size: 17px; font-weight: 800; }
+      .chart-card p { margin: 0 0 20px; color: var(--muted); font-size: 14.5px; }
+      .bars { display: flex; align-items: flex-end; gap: clamp(8px, 2.4vw, 22px); height: 190px; padding-top: 22px; }
+      .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+      .bar-val { font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 700; margin-bottom: 7px; }
+      .bar { width: 100%; max-width: 74px; border-radius: 8px 8px 3px 3px; background: var(--ink); min-height: 4px; }
+      .bar.hot { background: var(--accent); }
+      .bar-lab { margin-top: 9px; font-size: 13px; color: var(--muted); font-weight: 600; text-align: center; }
+
+      .story {
+        display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 30px; align-items: start;
+      }
+      .story .year {
+        font-family: "IBM Plex Mono", monospace; font-weight: 700;
+        font-size: clamp(64px, 9vw, 110px); line-height: 1; color: var(--surface-2);
+        -webkit-text-stroke: 2px var(--muted);
+      }
+      .story p { color: var(--muted); margin: 0 0 14px; }
+      .story p strong { color: var(--ink); }
+      .challenge {
+        margin-top: 30px; background: var(--ink); color: var(--bg);
+        border-radius: 24px; padding: clamp(24px, 4vw, 38px);
+        display: flex; flex-wrap: wrap; gap: 18px; align-items: center; justify-content: space-between;
+      }
+      .challenge h3 { margin: 0 0 6px; font-size: clamp(19px, 2.6vw, 24px); font-weight: 800; }
+      .challenge p { margin: 0; opacity: 0.82; max-width: 36em; font-size: 15px; }
+      .challenge .btn { background: var(--accent); color: #fff; flex: none; }
+      @media (prefers-color-scheme: dark) { .challenge .btn { color: #16100c; } }
+
+      section.block:last-of-type { padding-bottom: 30px; }
+
+      @media (max-width: 760px) {
+        .hero-grid { grid-template-columns: 1fr; }
+        .attractor { max-width: 300px; }
+        .stage-grid { grid-template-columns: 1fr; }
+        .facts { grid-template-columns: 1fr; }
+        .story { grid-template-columns: 1fr; }
+        .digit-boxes input { width: 56px; height: 68px; font-size: 33px; }
+        .actions { flex-direction: row; width: 100%; }
+        .actions .btn { flex: 1; }
+        .calc-row .tag, .op-line .sign { width: 74px; font-size: 11px; }
+        .op-line .sign { font-size: 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- SITE HEADER -->
+      <div class="site-head">
+        <div class="brand">
+          <span class="name">Toan Nguyen <span>In OZ</span></span>
+          <span class="tag" data-i18n="brandTag">Trang toán tương tác · Kaprekar 6174</span>
+        </div>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="vi">Tiếng Việt</button>
+          <button type="button" class="lang-btn" data-lang="en">English</button>
+          <button type="button" class="lang-btn" data-lang="fr">Français</button>
+          <button type="button" class="lang-btn" data-lang="zh">中文</button>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <header class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="kicker" data-i18n="kicker">Hằng số Kaprekar · 1949</span>
+            <h1 data-i18n-html="h1">Mọi con số đều bị hút về <span class="hl">6174</span></h1>
+            <p class="lede" data-i18n-html="lede">
+              Lấy một số có 4 chữ số bất kỳ — miễn là không phải bốn chữ số giống hệt nhau.
+              Sắp xếp các chữ số <strong>giảm dần</strong>, trừ đi số sắp xếp <strong>tăng dần</strong>,
+              rồi lặp lại với kết quả vừa nhận được. Cứ thế vài vòng, mọi con số đều bị hút về
+              cùng một đích: <strong>6174</strong>. Không một số nào thoát được.
+            </p>
+            <div class="rule-strip" aria-label="Quy tắc Kaprekar">
+              <span class="rule-step"><span class="n">1</span> <span data-i18n="rule1">Chọn số 4 chữ số</span></span>
+              <span class="rule-arrow">→</span>
+              <span class="rule-step"><span class="n">2</span> <span data-i18n="rule2">Giảm dần − Tăng dần</span></span>
+              <span class="rule-arrow">→</span>
+              <span class="rule-step"><span class="n">3</span> <span data-i18n="rule3">Lặp lại đến 6174</span></span>
+            </div>
+          </div>
+          <div class="attractor" aria-hidden="true">
+            <svg viewBox="0 0 300 300" fill="none">
+              <circle cx="150" cy="150" r="142" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 6"/>
+              <circle cx="150" cy="150" r="106" stroke="var(--line)" stroke-width="1.5"/>
+              <circle cx="150" cy="150" r="70" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.65"/>
+              <circle cx="150" cy="44" r="3.5" fill="var(--muted)"/>
+              <circle cx="256" cy="150" r="3.5" fill="var(--muted)"/>
+              <circle cx="150" cy="220" r="3.5" fill="var(--accent)"/>
+              <circle cx="80" cy="150" r="3.5" fill="var(--muted)"/>
+            </svg>
+            <span class="orbit-num" style="top:6%; left:12%;">2026</span>
+            <span class="orbit-num" style="top:16%; right:4%;">1000</span>
+            <span class="orbit-num" style="bottom:10%; right:10%;">8532</span>
+            <span class="orbit-num" style="bottom:16%; left:2%;">0999</span>
+            <div class="core">
+              <div>
+                <div class="big">6174</div>
+                <div class="small" data-i18n="orbitLabel">Điểm hút duy nhất</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- MACHINE -->
+      <main class="machine" id="machine">
+        <h2 data-i18n="machineTitle">Thử ngay với số của bạn</h2>
+        <p class="sub" data-i18n="machineSub">Nhập 4 chữ số rồi xem từng bước bị hút về 6174. Gợi ý: thử năm sinh của bạn.</p>
+
+        <div class="input-row">
+          <div class="digit-boxes" id="digitBoxes" role="group" aria-label="Nhập số có 4 chữ số">
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" aria-label="Chữ số thứ nhất" />
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" aria-label="Chữ số thứ hai" />
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" aria-label="Chữ số thứ ba" />
+            <input type="text" inputmode="numeric" autocomplete="off" maxlength="1" aria-label="Chữ số thứ tư" />
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="runBtn" type="button">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4.5v15l13-7.5-13-7.5z"/></svg>
+              <span data-i18n="runBtn">Chạy về 6174</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="error" id="errorBox" role="alert"></div>
+
+        <div class="chips">
+          <span class="label" data-i18n="chipsLabel">Thử nhanh:</span>
+          <button class="chip" type="button" data-num="2026" data-i18n="chip2026">2026 · 6 bước</button>
+          <button class="chip" type="button" data-num="1000" data-i18n="chip1000">1000 · 5 bước</button>
+          <button class="chip" type="button" data-num="6174" data-i18n="chip6174">6174 · tự giữ nguyên</button>
+          <button class="chip" type="button" data-num="3524">3524</button>
+          <button class="chip text" type="button" id="randomBtn" data-i18n="chipRandom">🎲 Số ngẫu nhiên</button>
+        </div>
+
+        <!-- STAGE -->
+        <div class="stage" id="stage">
+          <div class="chain" id="chain" aria-label="Chuỗi các số"></div>
+
+          <div class="stage-grid">
+            <div class="calc" id="calcPanel" aria-live="polite">
+              <div class="calc-row">
+                <span class="tag" data-i18n="tagDesc">Giảm dần</span>
+                <div class="tiles" id="descTiles"></div>
+              </div>
+              <div class="op-line">
+                <span class="sign">−</span>
+                <div class="bar"></div>
+              </div>
+              <div class="calc-row">
+                <span class="tag" data-i18n="tagAsc">Tăng dần</span>
+                <div class="tiles" id="ascTiles"></div>
+              </div>
+              <div class="op-line">
+                <span class="sign">=</span>
+                <div class="bar"></div>
+              </div>
+              <div class="calc-row result" id="resultRow">
+                <span class="tag" data-i18n="tagResult">Kết quả</span>
+                <div class="tiles" id="resultTiles"></div>
+              </div>
+            </div>
+
+            <div class="stage-side">
+              <div class="stat-box">
+                <div class="k" id="statLabel">Bước</div>
+                <div class="v"><span id="statStep">0</span><small> / <span id="statTotal">0</span> <span data-i18n="statSuffix">bước</span></small></div>
+              </div>
+              <div class="controls">
+                <button class="btn btn-ghost" id="prevBtn" type="button" data-i18n="prevBtn">← Trước</button>
+                <button class="btn btn-ghost" id="playBtn" type="button">▶ Tự chạy</button>
+                <button class="btn btn-primary" id="nextBtn" type="button">Tiếp →</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="finish" id="finishBox">
+            <div class="big" id="finishTitle"></div>
+            <p id="finishText"></p>
+          </div>
+
+          <div class="all-steps" id="allSteps">
+            <h3 data-i18n="allSteps">Toàn bộ các bước</h3>
+            <div class="step-rows" id="stepRows"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- FACTS -->
+      <section class="block">
+        <h2 data-i18n="factsTitle">Vì sao 6174 đặc biệt?</h2>
+        <p class="intro" data-i18n="factsIntro">Phép tính đơn giản này không chừa một ai — và 6174 là con số duy nhất tự giữ nguyên chính mình qua phép biến đổi.</p>
+        <div class="facts">
+          <div class="fact">
+            <div class="num">7641 − 1467</div>
+            <h3 data-i18n="fact1h">6174 tự giữ nguyên chính mình</h3>
+            <p data-i18n-html="fact1p">Sắp xếp 6174 giảm dần được <span class="mono">7641</span>, tăng dần được <span class="mono">1467</span>. Trừ hai số: <span class="mono">7641 − 1467 = 6174</span> — kết quả quay lại đúng điểm bắt đầu. Đây là điểm cố định duy nhất của phép biến đổi.</p>
+          </div>
+          <div class="fact">
+            <div class="num" data-i18n="fact2num">≤ 7 bước</div>
+            <h3 data-i18n="fact2h">Không số nào cần quá 7 bước</h3>
+            <p data-i18n-html="fact2p">Dù bắt đầu từ đâu, hành trình về 6174 dài tối đa 7 phép trừ. Ví dụ số năm nay <span class="mono">2026</span> cần đúng 6 bước, còn <span class="mono">1000</span> cần 5 bước — qua số đệm <span class="mono">0999</span>.</p>
+          </div>
+          <div class="fact">
+            <div class="num">0999</div>
+            <h3 data-i18n="fact3h">Số 0 đệm ở đầu luôn được giữ</h3>
+            <p data-i18n-html="fact3p">Mỗi kết quả đều được viết đủ 4 chữ số, kể cả khi phải đệm 0 ở đầu: <span class="mono">1000 − 0001 = 0999</span>. Bỏ qua số 0 này là phép tính sẽ đi chệch khỏi 6174.</p>
+          </div>
+          <div class="fact">
+            <div class="num">495</div>
+            <h3 data-i18n="fact4h">Người anh em 3 chữ số</h3>
+            <p data-i18n-html="fact4p">Cùng quy tắc áp dụng cho số có 3 chữ số sẽ hút mọi số về <span class="mono">495</span> — hằng số Kaprekar cho 3 chữ số, tối đa 6 bước.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHART -->
+      <section class="block">
+        <h2 data-i18n="chartTitle">Bản đồ của lỗ hút</h2>
+        <p class="intro" data-i18n="chartIntro">Trang này vừa tự kiểm chứng toàn bộ 9.990 số hợp lệ (mọi số 4 chữ số trừ các số có bốn chữ số giống hệt nhau): tất cả đều chạm 6174, không ngoại lệ.</p>
+        <div class="chart-card">
+          <h3 data-i18n="chartCardTitle">Số bước cần thiết để chạm 6174</h3>
+          <p data-i18n="chartCardSub">Phân bố theo số lượng số bắt đầu — cột đỏ là nhóm đông nhất.</p>
+          <div class="bars" id="bars" role="img" aria-label="Biểu đồ phân bố số bước về 6174 cho mọi số 4 chữ số hợp lệ"></div>
+        </div>
+      </section>
+
+      <!-- STORY -->
+      <section class="block">
+        <div class="story">
+          <div class="year" aria-hidden="true">1949</div>
+          <div>
+            <h2 data-i18n="storyTitle">Câu chuyện Kaprekar</h2>
+            <p data-i18n-html="storyP1">Hiện tượng này do nhà toán học Ấn Độ <strong>D. R. Kaprekar</strong> (Dattatreya Ramchandra Kaprekar) phát hiện năm <strong>1949</strong>. Ông là một giáo viên trường học say mê những con số tưởng như tầm thường, và đã trình bày khám phá này tại Hội nghị Toán học Madras.</p>
+            <p data-i18n-html="storyP2">Đến nay, 6174 vẫn là một trong những “lỗ hút” nổi tiếng nhất của toán học giải trí: một quy tắc ai cũng làm được trong vài giây, nhưng không một số 4 chữ số nào thoát được. Kênh <strong>Toán Khó</strong> đã kể lại trọn vẹn câu chuyện trong video mới — từ cách Kaprekar tìm ra nó, tới lý do vì sao không một số nào thoát được.</p>
+          </div>
+        </div>
+
+        <div class="challenge">
+          <div>
+            <h3 data-i18n="chalTitle">Thử thách trước khi xem video</h3>
+            <p data-i18n="chalText">Lấy năm sinh của bạn làm số bắt đầu, đếm xem cần bao nhiêu bước để chạm 6174 — rồi khoe kết quả của bạn ở phần bình luận của video nhé.</p>
+          </div>
+          <button class="btn" type="button" id="birthBtn" data-i18n="birthBtn">Thử với năm sinh của tôi</button>
+        </div>
+      </section>
+
+      <footer class="site-foot">
+        <div class="fname">Toan Nguyen <span>In OZ</span></div>
+        <p data-i18n-html="footLine">Hằng số Kaprekar · <span class="mono">7641 − 1467 = 6174</span> · Mọi số 4 chữ số hợp lệ đều về 6174 trong tối đa 7 bước.</p>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+        var TARGET = 6174;
+
+        /* ---------- i18n: vi / en / fr / zh ---------- */
+        var LOCALES = { vi: "vi-VN", en: "en-US", fr: "fr-FR", zh: "zh-CN" };
+        var HTML_LANG = { vi: "vi", en: "en", fr: "fr", zh: "zh-CN" };
+        var I18N = {
+          vi: {
+            docTitle: "Kaprekar 6174 — Lỗ hút toán học",
+            brandTag: "Trang toán tương tác · Kaprekar 6174",
+            kicker: "Hằng số Kaprekar · 1949",
+            h1: "Mọi con số đều bị hút về <span class=\"hl\">6174</span>",
+            lede: "Lấy một số có 4 chữ số bất kỳ — miễn là không phải bốn chữ số giống hệt nhau. Sắp xếp các chữ số <strong>giảm dần</strong>, trừ đi số sắp xếp <strong>tăng dần</strong>, rồi lặp lại với kết quả vừa nhận được. Cứ thế vài vòng, mọi con số đều bị hút về cùng một đích: <strong>6174</strong>. Không một số nào thoát được.",
+            rule1: "Chọn số 4 chữ số", rule2: "Giảm dần − Tăng dần", rule3: "Lặp lại đến 6174",
+            orbitLabel: "Điểm hút duy nhất",
+            machineTitle: "Thử ngay với số của bạn",
+            machineSub: "Nhập 4 chữ số rồi xem từng bước bị hút về 6174. Gợi ý: thử năm sinh của bạn.",
+            runBtn: "Chạy về 6174",
+            chipsLabel: "Thử nhanh:", chip2026: "2026 · 6 bước", chip1000: "1000 · 5 bước",
+            chip6174: "6174 · tự giữ nguyên", chipRandom: "🎲 Số ngẫu nhiên",
+            tagDesc: "Giảm dần", tagAsc: "Tăng dần", tagResult: "Kết quả",
+            prevBtn: "← Trước", playBtn: "▶ Tự chạy", pauseBtn: "⏸ Tạm dừng",
+            nextBtn: "Tiếp →", nextDone: "Đã tới 6174 ✓",
+            statStep: "Bước", statDone: "Đã ở đích", statSuffix: "bước", stepIdx: "B",
+            allSteps: "Toàn bộ các bước",
+            finish0Title: "Bạn bắt đầu ngay tại đích: <span class=\"mono\">6174</span>",
+            finish0Text: "6174 là số duy nhất tự giữ nguyên chính mình: 7641 − 1467 = 6174. Phép tính quay lại đúng điểm bắt đầu, mãi mãi.",
+            finishTitle1: "Đã chạm <span class=\"mono\">6174</span> sau {n} bước!",
+            finishTitleN: "Đã chạm <span class=\"mono\">6174</span> sau {n} bước!",
+            finishText: "Từ {start}, lỗ hút Kaprekar đã kéo mọi phép trừ về cùng một đích — và từ đây, 7641 − 1467 = 6174 sẽ lặp lại mãi mãi.",
+            errShort: "Hãy nhập đủ 4 chữ số để bắt đầu hành trình về 6174.",
+            errSame: "Bốn chữ số giống hệt nhau ({n}) sẽ cho kết quả 0000 ngay bước đầu và không bao giờ tới được 6174. Hãy đổi ít nhất một chữ số nhé.",
+            factsTitle: "Vì sao 6174 đặc biệt?",
+            factsIntro: "Phép tính đơn giản này không chừa một ai — và 6174 là con số duy nhất tự giữ nguyên chính mình qua phép biến đổi.",
+            fact1h: "6174 tự giữ nguyên chính mình",
+            fact1p: "Sắp xếp 6174 giảm dần được <span class=\"mono\">7641</span>, tăng dần được <span class=\"mono\">1467</span>. Trừ hai số: <span class=\"mono\">7641 − 1467 = 6174</span> — kết quả quay lại đúng điểm bắt đầu. Đây là điểm cố định duy nhất của phép biến đổi.",
+            fact2num: "≤ 7 bước", fact2h: "Không số nào cần quá 7 bước",
+            fact2p: "Dù bắt đầu từ đâu, hành trình về 6174 dài tối đa 7 phép trừ. Ví dụ số năm nay <span class=\"mono\">2026</span> cần đúng 6 bước, còn <span class=\"mono\">1000</span> cần 5 bước — qua số đệm <span class=\"mono\">0999</span>.",
+            fact3h: "Số 0 đệm ở đầu luôn được giữ",
+            fact3p: "Mỗi kết quả đều được viết đủ 4 chữ số, kể cả khi phải đệm 0 ở đầu: <span class=\"mono\">1000 − 0001 = 0999</span>. Bỏ qua số 0 này là phép tính sẽ đi chệch khỏi 6174.",
+            fact4h: "Người anh em 3 chữ số",
+            fact4p: "Cùng quy tắc áp dụng cho số có 3 chữ số sẽ hút mọi số về <span class=\"mono\">495</span> — hằng số Kaprekar cho 3 chữ số, tối đa 6 bước.",
+            chartTitle: "Bản đồ của lỗ hút",
+            chartIntro: "Trang này vừa tự kiểm chứng toàn bộ 9.990 số hợp lệ (mọi số 4 chữ số trừ các số có bốn chữ số giống hệt nhau): tất cả đều chạm 6174, không ngoại lệ.",
+            chartCardTitle: "Số bước cần thiết để chạm 6174",
+            chartCardSub: "Phân bố theo số lượng số bắt đầu — cột đỏ là nhóm đông nhất.",
+            bar0: "0 bước<br>(chính là 6174)", stepWord1: "bước", stepWordN: "bước",
+            storyTitle: "Câu chuyện Kaprekar",
+            storyP1: "Hiện tượng này do nhà toán học Ấn Độ <strong>D. R. Kaprekar</strong> (Dattatreya Ramchandra Kaprekar) phát hiện năm <strong>1949</strong>. Ông là một giáo viên trường học say mê những con số tưởng như tầm thường, và đã trình bày khám phá này tại Hội nghị Toán học Madras.",
+            storyP2: "Đến nay, 6174 vẫn là một trong những “lỗ hút” nổi tiếng nhất của toán học giải trí: một quy tắc ai cũng làm được trong vài giây, nhưng không một số 4 chữ số nào thoát được. Kênh <strong>Toán Khó</strong> đã kể lại trọn vẹn câu chuyện trong video mới — từ cách Kaprekar tìm ra nó, tới lý do vì sao không một số nào thoát được.",
+            chalTitle: "Thử thách trước khi xem video",
+            chalText: "Lấy năm sinh của bạn làm số bắt đầu, đếm xem cần bao nhiêu bước để chạm 6174 — rồi khoe kết quả của bạn ở phần bình luận của video nhé.",
+            birthBtn: "Thử với năm sinh của tôi",
+            footLine: "Hằng số Kaprekar · <span class=\"mono\">7641 − 1467 = 6174</span> · Mọi số 4 chữ số hợp lệ đều về 6174 trong tối đa 7 bước.",
+            ariaDigits: ["Chữ số thứ nhất", "Chữ số thứ hai", "Chữ số thứ ba", "Chữ số thứ tư"]
+          },
+          en: {
+            docTitle: "Kaprekar 6174 — The mathematical black hole",
+            brandTag: "Interactive maths · Kaprekar 6174",
+            kicker: "Kaprekar constant · 1949",
+            h1: "Every number gets pulled into <span class=\"hl\">6174</span>",
+            lede: "Take any 4-digit number — as long as its digits aren't all identical. Arrange the digits in <strong>descending</strong> order, subtract the <strong>ascending</strong> arrangement, and repeat with the result you just got. Within a few rounds, every number is pulled to the same destination: <strong>6174</strong>. No number escapes.",
+            rule1: "Pick a 4-digit number", rule2: "Descending − Ascending", rule3: "Repeat until 6174",
+            orbitLabel: "The one attractor",
+            machineTitle: "Try it with your number",
+            machineSub: "Enter 4 digits and watch each step get pulled toward 6174. Tip: try your birth year.",
+            runBtn: "Run to 6174",
+            chipsLabel: "Quick try:", chip2026: "2026 · 6 steps", chip1000: "1000 · 5 steps",
+            chip6174: "6174 · stays itself", chipRandom: "🎲 Random number",
+            tagDesc: "Descending", tagAsc: "Ascending", tagResult: "Result",
+            prevBtn: "← Back", playBtn: "▶ Auto-play", pauseBtn: "⏸ Pause",
+            nextBtn: "Next →", nextDone: "Reached 6174 ✓",
+            statStep: "Step", statDone: "At the target", statSuffix: "steps", stepIdx: "S",
+            allSteps: "All steps",
+            finish0Title: "You started right at the target: <span class=\"mono\">6174</span>",
+            finish0Text: "6174 is the only number that keeps itself: 7641 − 1467 = 6174. The calculation returns to its starting point, forever.",
+            finishTitle1: "Reached <span class=\"mono\">6174</span> in {n} step!",
+            finishTitleN: "Reached <span class=\"mono\">6174</span> in {n} steps!",
+            finishText: "From {start}, Kaprekar's black hole pulled every subtraction to the same destination — and from here, 7641 − 1467 = 6174 repeats forever.",
+            errShort: "Enter all 4 digits to start the journey to 6174.",
+            errSame: "Four identical digits ({n}) give 0000 on the very first step and never reach 6174. Change at least one digit.",
+            factsTitle: "Why is 6174 special?",
+            factsIntro: "This simple calculation spares no one — and 6174 is the only number that stays unchanged through the transformation.",
+            fact1h: "6174 keeps itself",
+            fact1p: "Arrange 6174 descending to get <span class=\"mono\">7641</span>, ascending to get <span class=\"mono\">1467</span>. Subtract: <span class=\"mono\">7641 − 1467 = 6174</span> — the result returns to exactly where it started. This is the transformation's only fixed point.",
+            fact2num: "≤ 7 steps", fact2h: "No number needs more than 7 steps",
+            fact2p: "Wherever you start, the journey to 6174 takes at most 7 subtractions. This year's number <span class=\"mono\">2026</span> needs exactly 6 steps, while <span class=\"mono\">1000</span> needs 5 — passing through the padded number <span class=\"mono\">0999</span>.",
+            fact3h: "The leading zero is always kept",
+            fact3p: "Every result is written with a full 4 digits, even when a leading zero must be padded: <span class=\"mono\">1000 − 0001 = 0999</span>. Drop that zero and the calculation drifts away from 6174.",
+            fact4h: "The 3-digit sibling",
+            fact4p: "The same rule applied to 3-digit numbers pulls everything to <span class=\"mono\">495</span> — the Kaprekar constant for 3 digits, in at most 6 steps.",
+            chartTitle: "Map of the black hole",
+            chartIntro: "This page just verified all 9,990 valid numbers (every 4-digit number except those with four identical digits): all of them reach 6174, no exceptions.",
+            chartCardTitle: "Steps needed to reach 6174",
+            chartCardSub: "Distribution by starting number — the red bar is the largest group.",
+            bar0: "0 steps<br>(6174 itself)", stepWord1: "step", stepWordN: "steps",
+            storyTitle: "The Kaprekar story",
+            storyP1: "This phenomenon was discovered in <strong>1949</strong> by the Indian mathematician <strong>D. R. Kaprekar</strong> (Dattatreya Ramchandra Kaprekar). He was a schoolteacher fascinated by seemingly ordinary numbers, and presented the discovery at the Madras Mathematical Conference.",
+            storyP2: "To this day, 6174 remains one of the most famous “black holes” in recreational mathematics: a rule anyone can do in seconds, yet no 4-digit number can escape it. The <strong>Toán Khó</strong> channel told the full story in its newest video — from how Kaprekar found it, to why no number can escape.",
+            chalTitle: "A challenge before you watch",
+            chalText: "Use your birth year as the starting number, count how many steps it takes to reach 6174 — then share your result in the video's comments.",
+            birthBtn: "Try my birth year",
+            footLine: "Kaprekar constant · <span class=\"mono\">7641 − 1467 = 6174</span> · Every valid 4-digit number reaches 6174 in at most 7 steps.",
+            ariaDigits: ["First digit", "Second digit", "Third digit", "Fourth digit"]
+          },
+          fr: {
+            docTitle: "Kaprekar 6174 — Le trou noir des mathématiques",
+            brandTag: "Maths interactives · Kaprekar 6174",
+            kicker: "Constante de Kaprekar · 1949",
+            h1: "Tous les nombres sont attirés vers <span class=\"hl\">6174</span>",
+            lede: "Prenez un nombre à 4 chiffres quelconque — pourvu que ses chiffres ne soient pas tous identiques. Triez les chiffres par ordre <strong>décroissant</strong>, soustrayez le nombre trié par ordre <strong>croissant</strong>, puis recommencez avec le résultat obtenu. En quelques tours, tous les nombres sont attirés vers la même destination : <strong>6174</strong>. Aucun n'y échappe.",
+            rule1: "Choisissez un nombre à 4 chiffres", rule2: "Décroissant − Croissant", rule3: "Répétez jusqu'à 6174",
+            orbitLabel: "L'unique attracteur",
+            machineTitle: "Essayez avec votre nombre",
+            machineSub: "Entrez 4 chiffres et regardez chaque étape être attirée vers 6174. Astuce : essayez votre année de naissance.",
+            runBtn: "Direction 6174",
+            chipsLabel: "Essai rapide :", chip2026: "2026 · 6 étapes", chip1000: "1000 · 5 étapes",
+            chip6174: "6174 · se conserve", chipRandom: "🎲 Nombre aléatoire",
+            tagDesc: "Décroissant", tagAsc: "Croissant", tagResult: "Résultat",
+            prevBtn: "← Retour", playBtn: "▶ Lecture auto", pauseBtn: "⏸ Pause",
+            nextBtn: "Suivant →", nextDone: "6174 atteint ✓",
+            statStep: "Étape", statDone: "À destination", statSuffix: "étapes", stepIdx: "É",
+            allSteps: "Toutes les étapes",
+            finish0Title: "Vous commencez directement à destination : <span class=\"mono\">6174</span>",
+            finish0Text: "6174 est le seul nombre qui se conserve lui-même : 7641 − 1467 = 6174. Le calcul revient à son point de départ, pour toujours.",
+            finishTitle1: "<span class=\"mono\">6174</span> atteint en {n} étape !",
+            finishTitleN: "<span class=\"mono\">6174</span> atteint en {n} étapes !",
+            finishText: "Depuis {start}, le trou noir de Kaprekar a attiré chaque soustraction vers la même destination — et à partir d'ici, 7641 − 1467 = 6174 se répète pour toujours.",
+            errShort: "Entrez les 4 chiffres pour commencer le voyage vers 6174.",
+            errSame: "Quatre chiffres identiques ({n}) donnent 0000 dès la première étape et n'atteignent jamais 6174. Changez au moins un chiffre.",
+            factsTitle: "Pourquoi 6174 est-il spécial ?",
+            factsIntro: "Ce calcul simple n'épargne personne — et 6174 est le seul nombre qui reste inchangé par la transformation.",
+            fact1h: "6174 se conserve lui-même",
+            fact1p: "Triez 6174 par ordre décroissant : <span class=\"mono\">7641</span> ; par ordre croissant : <span class=\"mono\">1467</span>. Soustrayez : <span class=\"mono\">7641 − 1467 = 6174</span> — le résultat revient exactement au point de départ. C'est l'unique point fixe de la transformation.",
+            fact2num: "≤ 7 étapes", fact2h: "Aucun nombre n'a besoin de plus de 7 étapes",
+            fact2p: "Où que vous commenciez, le voyage vers 6174 dure au plus 7 soustractions. Le nombre de cette année, <span class=\"mono\">2026</span>, en demande exactement 6, et <span class=\"mono\">1000</span> en demande 5 — en passant par le nombre complété <span class=\"mono\">0999</span>.",
+            fact3h: "Le zéro de tête est toujours conservé",
+            fact3p: "Chaque résultat s'écrit avec 4 chiffres complets, même s'il faut compléter par un zéro : <span class=\"mono\">1000 − 0001 = 0999</span>. Sans ce zéro, le calcul s'écarte de 6174.",
+            fact4h: "Le cousin à 3 chiffres",
+            fact4p: "La même règle appliquée aux nombres à 3 chiffres attire tout vers <span class=\"mono\">495</span> — la constante de Kaprekar pour 3 chiffres, en 6 étapes maximum.",
+            chartTitle: "Carte du trou noir",
+            chartIntro: "Cette page vient de vérifier les 9 990 nombres valides (tous les nombres à 4 chiffres sauf ceux à quatre chiffres identiques) : tous atteignent 6174, sans exception.",
+            chartCardTitle: "Nombre d'étapes pour atteindre 6174",
+            chartCardSub: "Répartition selon le nombre de départ — la barre rouge est le groupe le plus nombreux.",
+            bar0: "0 étape<br>(6174 lui-même)", stepWord1: "étape", stepWordN: "étapes",
+            storyTitle: "L'histoire de Kaprekar",
+            storyP1: "Ce phénomène a été découvert en <strong>1949</strong> par le mathématicien indien <strong>D. R. Kaprekar</strong> (Dattatreya Ramchandra Kaprekar). Instituteur passionné par les nombres en apparence ordinaires, il a présenté sa découverte à la Conférence mathématique de Madras.",
+            storyP2: "Aujourd'hui encore, 6174 reste l'un des « trous noirs » les plus célèbres des mathématiques récréatives : une règle que chacun peut appliquer en quelques secondes, mais à laquelle aucun nombre à 4 chiffres n'échappe. La chaîne <strong>Toán Khó</strong> a raconté toute l'histoire dans sa nouvelle vidéo — de la découverte de Kaprekar aux raisons pour lesquelles aucun nombre ne peut y échapper.",
+            chalTitle: "Un défi avant de regarder la vidéo",
+            chalText: "Prenez votre année de naissance comme nombre de départ, comptez les étapes jusqu'à 6174 — puis partagez votre résultat dans les commentaires de la vidéo.",
+            birthBtn: "Essayer mon année de naissance",
+            footLine: "Constante de Kaprekar · <span class=\"mono\">7641 − 1467 = 6174</span> · Tout nombre à 4 chiffres valide atteint 6174 en 7 étapes maximum.",
+            ariaDigits: ["Premier chiffre", "Deuxième chiffre", "Troisième chiffre", "Quatrième chiffre"]
+          },
+          zh: {
+            docTitle: "Kaprekar 6174 — 数学黑洞",
+            brandTag: "互动数学 · Kaprekar 6174",
+            kicker: "卡普雷卡常数 · 1949",
+            h1: "所有数字都会被吸向 <span class=\"hl\">6174</span>",
+            lede: "任取一个 4 位数——只要四个数字不完全相同即可。把各位数字按<strong>从大到小</strong>排列,减去按<strong>从小到大</strong>排列的数,再用得到的结果重复这个过程。几轮之后,所有数字都会被吸向同一个终点:<strong>6174</strong>。没有一个数字能逃脱。",
+            rule1: "选择一个 4 位数", rule2: "从大到小 − 从小到大", rule3: "重复直到 6174",
+            orbitLabel: "唯一的吸引点",
+            machineTitle: "用你的数字试试",
+            machineSub: "输入 4 个数字,看它一步步被吸向 6174。小建议:试试你的出生年份。",
+            runBtn: "奔向 6174",
+            chipsLabel: "快速试试:", chip2026: "2026 · 6 步", chip1000: "1000 · 5 步",
+            chip6174: "6174 · 保持自身", chipRandom: "🎲 随机数字",
+            tagDesc: "从大到小", tagAsc: "从小到大", tagResult: "结果",
+            prevBtn: "← 上一步", playBtn: "▶ 自动播放", pauseBtn: "⏸ 暂停",
+            nextBtn: "下一步 →", nextDone: "已到达 6174 ✓",
+            statStep: "步数", statDone: "已到达终点", statSuffix: "步", stepIdx: "步",
+            allSteps: "全部步骤",
+            finish0Title: "你一开始就在终点:<span class=\"mono\">6174</span>",
+            finish0Text: "6174 是唯一能保持自身的数字:7641 − 1467 = 6174。计算永远回到起点。",
+            finishTitle1: "经过 {n} 步到达 <span class=\"mono\">6174</span>!",
+            finishTitleN: "经过 {n} 步到达 <span class=\"mono\">6174</span>!",
+            finishText: "从 {start} 出发,卡普雷卡黑洞把每一次减法都拉向同一个终点——从这里起,7641 − 1467 = 6174 将永远重复。",
+            errShort: "请输入完整的 4 个数字,开始奔向 6174 的旅程。",
+            errSame: "四个数字完全相同({n})第一步就会得到 0000,永远到不了 6174。请至少改动一个数字。",
+            factsTitle: "为什么 6174 如此特别?",
+            factsIntro: "这个简单的运算不放过任何数字——而 6174 是唯一在变换中保持自身的数字。",
+            fact1h: "6174 保持自身",
+            fact1p: "把 6174 从大到小排列得到 <span class=\"mono\">7641</span>,从小到大排列得到 <span class=\"mono\">1467</span>。相减:<span class=\"mono\">7641 − 1467 = 6174</span>——结果正好回到起点。这是该变换唯一的不动点。",
+            fact2num: "≤ 7 步", fact2h: "任何数字最多需要 7 步",
+            fact2p: "无论从哪里开始,到达 6174 的旅程最多需要 7 次减法。今年的数字 <span class=\"mono\">2026</span> 正好需要 6 步,而 <span class=\"mono\">1000</span> 需要 5 步——途中经过补零的 <span class=\"mono\">0999</span>。",
+            fact3h: "开头的 0 始终保留",
+            fact3p: "每个结果都写满 4 位,必要时在前面补 0:<span class=\"mono\">1000 − 0001 = 0999</span>。丢掉这个 0,计算就会偏离 6174。",
+            fact4h: "三位数的兄弟",
+            fact4p: "同样的规则用于三位数,会把所有数字吸向 <span class=\"mono\">495</span>——三位数的卡普雷卡常数,最多 6 步。",
+            chartTitle: "黑洞地图",
+            chartIntro: "本页刚刚验证了全部 9,990 个有效数字(除四个数字完全相同之外的所有 4 位数):它们全部到达 6174,无一例外。",
+            chartCardTitle: "到达 6174 所需的步数",
+            chartCardSub: "按起始数字的分布——红色柱是数量最多的一组。",
+            bar0: "0 步<br>(即 6174 本身)", stepWord1: "步", stepWordN: "步",
+            storyTitle: "卡普雷卡的故事",
+            storyP1: "这一现象由印度数学家 <strong>D. R. Kaprekar</strong>(Dattatreya Ramchandra Kaprekar)于 <strong>1949</strong> 年发现。他是一位痴迷于看似平凡数字的学校教师,并在马德拉斯数学会议上公布了这一发现。",
+            storyP2: "时至今日,6174 仍是趣味数学中最著名的“黑洞”之一:规则人人几秒就能学会,却没有任何 4 位数能逃脱。<strong>Toán Khó</strong> 频道在新视频中完整讲述了这个故事——从卡普雷卡如何发现它,到为什么没有数字能逃脱。",
+            chalTitle: "看视频前的小挑战",
+            chalText: "用你的出生年份作为起始数字,数一数需要几步到达 6174——然后在视频评论区晒出你的结果吧。",
+            birthBtn: "试试我的出生年份",
+            footLine: "卡普雷卡常数 · <span class=\"mono\">7641 − 1467 = 6174</span> · 每个有效的 4 位数最多 7 步到达 6174。",
+            ariaDigits: ["第一个数字", "第二个数字", "第三个数字", "第四个数字"]
+          }
+        };
+        var lang = "vi";
+        function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.vi[key] || key; }
+
+        function pad4(n) {
+          var s = String(n);
+          while (s.length < 4) s = "0" + s;
+          return s;
+        }
+        function kaprekarStep(str) {
+          var digits = str.split("");
+          var desc = digits.slice().sort(function (a, b) { return b - a; }).join("");
+          var asc = digits.slice().sort(function (a, b) { return a - b; }).join("");
+          var result = parseInt(desc, 10) - parseInt(asc, 10);
+          return { from: str, desc: desc, asc: asc, result: pad4(result) };
+        }
+        function computeChain(startStr) {
+          var steps = [];
+          var cur = startStr;
+          var guard = 0;
+          while (cur !== "6174" && guard < 20) {
+            var st = kaprekarStep(cur);
+            steps.push(st);
+            cur = st.result;
+            guard++;
+          }
+          return steps;
+        }
+
+        /* ---------- Input boxes ---------- */
+        var boxes = Array.prototype.slice.call(document.querySelectorAll("#digitBoxes input"));
+        var errorBox = document.getElementById("errorBox");
+        var stage = document.getElementById("stage");
+
+        boxes.forEach(function (box, i) {
+          box.addEventListener("input", function () {
+            box.value = box.value.replace(/\D/g, "").slice(-1);
+            box.classList.toggle("filled", box.value !== "");
+            hideError();
+            if (box.value !== "" && i < 3) boxes[i + 1].focus();
+          });
+          box.addEventListener("keydown", function (e) {
+            if (e.key === "Backspace" && box.value === "" && i > 0) {
+              boxes[i - 1].focus();
+              boxes[i - 1].value = "";
+              boxes[i - 1].classList.remove("filled");
+              e.preventDefault();
+            }
+            if (e.key === "Enter") run();
+            if (e.key === "ArrowLeft" && i > 0) boxes[i - 1].focus();
+            if (e.key === "ArrowRight" && i < 3) boxes[i + 1].focus();
+          });
+          box.addEventListener("paste", function (e) {
+            e.preventDefault();
+            var text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "").slice(0, 4);
+            setDigits(text);
+            if (text.length === 4) run();
+          });
+          box.addEventListener("focus", function () { box.select(); });
+        });
+
+        function setDigits(str) {
+          for (var i = 0; i < 4; i++) {
+            boxes[i].value = str[i] || "";
+            boxes[i].classList.toggle("filled", !!str[i]);
+          }
+        }
+        function readDigits() {
+          return boxes.map(function (b) { return b.value; }).join("");
+        }
+        function showError(msg) {
+          errorBox.textContent = msg;
+          errorBox.classList.add("show");
+        }
+        function hideError() { errorBox.classList.remove("show"); }
+
+        /* ---------- Run / state ---------- */
+        var chainEl = document.getElementById("chain");
+        var descTiles = document.getElementById("descTiles");
+        var ascTiles = document.getElementById("ascTiles");
+        var resultTiles = document.getElementById("resultTiles");
+        var resultRow = document.getElementById("resultRow");
+        var statStep = document.getElementById("statStep");
+        var statTotal = document.getElementById("statTotal");
+        var statLabel = document.getElementById("statLabel");
+        var prevBtn = document.getElementById("prevBtn");
+        var nextBtn = document.getElementById("nextBtn");
+        var playBtn = document.getElementById("playBtn");
+        var finishBox = document.getElementById("finishBox");
+        var finishTitle = document.getElementById("finishTitle");
+        var finishText = document.getElementById("finishText");
+        var stepRows = document.getElementById("stepRows");
+
+        var state = { start: "", steps: [], view: 0, timer: null, playing: false };
+        // view: 0 = start number only; k = first k steps revealed (viewing step k)
+
+        function tilesHTML(str) {
+          return str.split("").map(function (d) {
+            return '<span class="tile' + (d === "0" ? " zero" : "") + '">' + d + "</span>";
+          }).join("");
+        }
+
+        function render() {
+          var steps = state.steps;
+          var total = steps.length;
+
+          // Chain strip: start + each result
+          var nodes = [state.start].concat(steps.map(function (s) { return s.result; }));
+          chainEl.innerHTML = nodes.map(function (n, i) {
+            var cls = "node";
+            if (i < state.view) cls += " done";
+            if (i === state.view) cls += " current";
+            if (n === "6174") cls += " final";
+            var arrow = i < nodes.length - 1 ? '<span class="arr">→</span>' : "";
+            return '<button type="button" class="' + cls + '" data-view="' + i + '">' + n + "</button>" + arrow;
+          }).join("");
+          Array.prototype.forEach.call(chainEl.querySelectorAll(".node"), function (el) {
+            el.addEventListener("click", function () {
+              stopPlay();
+              state.view = parseInt(el.getAttribute("data-view"), 10);
+              render();
+            });
+          });
+
+          // Calc panel
+          var panel = document.getElementById("calcPanel");
+          panel.classList.remove("reveal");
+          void panel.offsetWidth;
+          panel.classList.add("reveal");
+          if (state.view === 0) {
+            // Show the self-proof if start is 6174, else show start digits as "starting point"
+            var st0 = kaprekarStep(state.start);
+            descTiles.innerHTML = tilesHTML(st0.desc);
+            ascTiles.innerHTML = tilesHTML(st0.asc);
+            resultTiles.innerHTML = tilesHTML(st0.result);
+            resultRow.classList.toggle("self", state.start === "6174");
+          } else {
+            var st = steps[state.view - 1];
+            descTiles.innerHTML = tilesHTML(st.desc);
+            ascTiles.innerHTML = tilesHTML(st.asc);
+            resultTiles.innerHTML = tilesHTML(st.result);
+            resultRow.classList.toggle("self", st.from === "6174");
+          }
+
+          // Stats & controls
+          statStep.textContent = state.view;
+          statTotal.textContent = total;
+          statLabel.textContent = total === 0 ? t("statDone") : t("statStep");
+          prevBtn.disabled = state.view === 0;
+          nextBtn.disabled = state.view >= total;
+          nextBtn.textContent = state.view >= total ? t("nextDone") : t("nextBtn");
+
+          // All-steps list
+          document.getElementById("allSteps").style.display = total === 0 ? "none" : "";
+          stepRows.innerHTML = steps.map(function (s, i) {
+            var resCls = s.result === "6174" ? "res gold" : "res";
+            return '<div class="step-row' + (i < state.view ? " on" : "") + '">' +
+              '<span class="idx">' + t("stepIdx") + (i + 1) + "</span>" +
+              "<span>" + s.desc + '</span><span class="minus">−</span><span>' + s.asc + '</span><span class="minus">=</span>' +
+              '<span class="' + resCls + '">' + s.result + "</span></div>";
+          }).join("");
+
+          // Finish banner
+          if (state.view >= total) {
+            finishBox.classList.add("show");
+            if (total === 0) {
+              finishTitle.innerHTML = t("finish0Title");
+              finishText.textContent = t("finish0Text");
+            } else {
+              finishTitle.innerHTML = t(total === 1 ? "finishTitle1" : "finishTitleN").replace("{n}", total);
+              finishText.textContent = t("finishText").replace("{start}", state.start);
+            }
+          } else {
+            finishBox.classList.remove("show");
+          }
+        }
+
+        function stopPlay() {
+          if (state.timer) { clearInterval(state.timer); state.timer = null; }
+          state.playing = false;
+          playBtn.textContent = t("playBtn");
+        }
+        function startPlay() {
+          if (state.view >= state.steps.length) state.view = 0;
+          state.playing = true;
+          playBtn.textContent = t("pauseBtn");
+          render();
+          state.timer = setInterval(function () {
+            if (state.view >= state.steps.length) { stopPlay(); return; }
+            state.view++;
+            render();
+            if (state.view >= state.steps.length) stopPlay();
+          }, 1500);
+        }
+
+        prevBtn.addEventListener("click", function () { stopPlay(); if (state.view > 0) { state.view--; render(); } });
+        nextBtn.addEventListener("click", function () { stopPlay(); if (state.view < state.steps.length) { state.view++; render(); } });
+        playBtn.addEventListener("click", function () { state.playing ? stopPlay() : startPlay(); });
+
+        function run() {
+          stopPlay();
+          var val = readDigits();
+          if (val.length < 4) {
+            showError(t("errShort"));
+            (val.length < 4 ? boxes[val.length] : boxes[0]).focus();
+            return;
+          }
+          if (val[0] === val[1] && val[1] === val[2] && val[2] === val[3]) {
+            showError(t("errSame").replace("{n}", val));
+            return;
+          }
+          hideError();
+          state.start = val;
+          state.steps = computeChain(val);
+          state.view = 0;
+          stage.classList.add("show");
+          render();
+          stage.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          // Auto-play through the steps for the delight factor
+          if (state.steps.length > 0) {
+            setTimeout(startPlay, 450);
+          }
+        }
+
+        document.getElementById("runBtn").addEventListener("click", run);
+
+        /* ---------- Chips ---------- */
+        Array.prototype.forEach.call(document.querySelectorAll(".chip[data-num]"), function (chip) {
+          chip.addEventListener("click", function () {
+            setDigits(chip.getAttribute("data-num"));
+            run();
+          });
+        });
+        document.getElementById("randomBtn").addEventListener("click", function () {
+          var s;
+          do { s = pad4(Math.floor(Math.random() * 10000)); }
+          while (s[0] === s[1] && s[1] === s[2] && s[2] === s[3]);
+          setDigits(s);
+          run();
+        });
+        document.getElementById("birthBtn").addEventListener("click", function () {
+          document.getElementById("machine").scrollIntoView({ behavior: "smooth" });
+          setTimeout(function () { boxes[0].focus(); }, 500);
+        });
+
+        /* ---------- Histogram: verify every valid number ---------- */
+        var chartCounts = null;
+        function buildChart() {
+          if (!chartCounts) {
+            chartCounts = [0, 0, 0, 0, 0, 0, 0, 0]; // index = steps needed
+            for (var n = 0; n <= 9999; n++) {
+              var s = pad4(n);
+              if (s[0] === s[1] && s[1] === s[2] && s[2] === s[3]) continue;
+              chartCounts[computeChain(s).length]++;
+            }
+          }
+          var max = Math.max.apply(null, chartCounts);
+          var barsEl = document.getElementById("bars");
+          var html = "";
+          for (var k = 0; k <= 7; k++) {
+            var pct = Math.max(3, Math.round((chartCounts[k] / max) * 100));
+            var lab = k === 0 ? t("bar0") : k + " " + (k === 1 ? t("stepWord1") : t("stepWordN"));
+            html += '<div class="bar-col">' +
+              '<div class="bar-val">' + chartCounts[k].toLocaleString(LOCALES[lang]) + "</div>" +
+              '<div class="bar' + (chartCounts[k] === max ? " hot" : "") + '" style="height:' + pct + '%"></div>' +
+              '<div class="bar-lab">' + lab + "</div></div>";
+          }
+          barsEl.innerHTML = html;
+        }
+        buildChart();
+
+        /* ---------- Language switching ---------- */
+        function applyLang(newLang) {
+          if (!I18N[newLang]) return;
+          lang = newLang;
+          document.documentElement.lang = HTML_LANG[lang];
+          document.title = t("docTitle");
+          Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function (el) {
+            el.textContent = t(el.getAttribute("data-i18n"));
+          });
+          Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-html]"), function (el) {
+            el.innerHTML = t(el.getAttribute("data-i18n-html"));
+          });
+          boxes.forEach(function (box, i) { box.setAttribute("aria-label", t("ariaDigits")[i]); });
+          Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function (btn) {
+            btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+          });
+          playBtn.textContent = state.playing ? t("pauseBtn") : t("playBtn");
+          if (errorBox.classList.contains("show")) hideError();
+          if (stage.classList.contains("show")) render();
+          buildChart();
+        }
+        Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function (btn) {
+          btn.addEventListener("click", function () { applyLang(btn.getAttribute("data-lang")); });
+        });
+
+        /* ---------- Starter demo ---------- */
+        setDigits("2026");
+        applyLang("vi");
+      })();
+    </script>
+  </body>
+</html>
